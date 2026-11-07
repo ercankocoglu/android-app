@@ -1,4 +1,4 @@
-# UstaBulduk: imzalama anahtarı gerektirmeyen test (debug) APK derlemesi
+# UstaBulduk: imzalama anahtarı gerektirmeyen (debug) APK derlemesi
 name: UB debug APK
 
 on:
