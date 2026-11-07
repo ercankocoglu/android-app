@@ -54,6 +54,17 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- UstaBulduk: doğrulama aramalarını çalmadan reddetme (arama süzme) -->
+        <service
+            android:name=".modules.ustabulduk.UbCallScreeningService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE"
+            tools:targetApi="24">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".receivers.BootReceiver"
             android:enabled="true"

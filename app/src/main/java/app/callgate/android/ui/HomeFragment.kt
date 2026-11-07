@@ -1,6 +1,8 @@
 package app.callgate.android.ui
 
 import android.Manifest
+import android.app.Activity
+import android.app.role.RoleManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -110,6 +112,31 @@ class HomeFragment : Fragment() {
 
     private fun start() {
         orchestratorSvc.start(requireContext(), autostart = false)
+        requestScreeningRole()
+    }
+
+    /** UstaBulduk: doğrulama aramalarını çalmadan reddedebilmek için "arama süzme" rolü (Android 10+) */
+    private fun requestScreeningRole() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        val roleManager = requireContext().getSystemService(RoleManager::class.java) ?: return
+        if (!roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)) return
+        if (roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)) return
+        try {
+            screeningRoleRequest.launch(roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING))
+        } catch (e: Throwable) {
+            Log.e("HomeFragment", "Arama süzme rolü istenemedi", e)
+        }
+    }
+
+    private val screeningRoleRequest = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val granted = result.resultCode == Activity.RESULT_OK
+        Toast.makeText(
+            requireContext(),
+            if (granted) "Arama süzme etkin: doğrulama aramaları çalmadan reddedilecek" else "Arama süzme izni verilmedi",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun stop() {

@@ -6,12 +6,14 @@ import android.os.Build
 import android.util.Log
 import app.callgate.android.modules.server.ServerService
 import app.callgate.android.modules.settings.GeneralSettings
+import app.callgate.android.modules.ustabulduk.UbCommandPoller
 import app.callgate.android.modules.webhooks.WebHooksService
 
 class OrchestratorService(
     private val settings: GeneralSettings,
     private val serverSvc: ServerService,
     private val webHooksSvc: WebHooksService,
+    private val ubPoller: UbCommandPoller,
 ) {
     fun start(context: Context, autostart: Boolean) {
         if (autostart && !settings.autostart) {
@@ -19,6 +21,7 @@ class OrchestratorService(
         }
 
         webHooksSvc.start(context)
+        ubPoller.start()   // UstaBulduk: siteden komut çekme (aramayı kapat / ara)
 
         try {
             serverSvc.start(context)
@@ -43,6 +46,7 @@ class OrchestratorService(
     }
 
     fun stop(context: Context) {
+        ubPoller.stop()
         try {
             webHooksSvc.stop(context)
         } catch (e: Throwable) {

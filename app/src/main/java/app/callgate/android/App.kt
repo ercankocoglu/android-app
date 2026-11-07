@@ -9,6 +9,7 @@ import app.callgate.android.modules.orchestrator.OrchestratorService
 import app.callgate.android.modules.orchestrator.orchestratorModule
 import app.callgate.android.modules.server.serverService
 import app.callgate.android.modules.settings.settingsModule
+import app.callgate.android.modules.ustabulduk.ustabuldukModule
 import app.callgate.android.modules.webhooks.webhooksModule
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
@@ -31,6 +32,7 @@ class App : Application() {
                 webhooksModule,
                 connectionModule,
                 orchestratorModule,
+                ustabuldukModule,
             )
         }
 
