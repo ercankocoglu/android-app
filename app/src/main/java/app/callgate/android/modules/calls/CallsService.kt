@@ -48,12 +48,12 @@ class CallsService(
         return when (val callState = telephonyManager.callState) {
             TelephonyManager.CALL_STATE_IDLE -> CallDetails(null, CallState.Idle)
             TelephonyManager.CALL_STATE_RINGING -> CallDetails(
-                telephonyManager.line1Number,
+                safeLine1Number(),
                 CallState.Ringing,
             )
 
             TelephonyManager.CALL_STATE_OFFHOOK -> CallDetails(
-                telephonyManager.line1Number,
+                safeLine1Number(),
                 CallState.Active,
             )
 
@@ -113,6 +113,21 @@ class CallsService(
             e.printStackTrace()
             throw RuntimeException("Failed to end call", e)
         }
+    }
+
+    /**
+     * UstaBulduk yaması: kendi hat numarasını okumak READ_PHONE_NUMBERS izni ister ve bazı telefonlarda (Xiaomi / HyperOS)
+     * izin verilse bile engellenir. Numara yalnızca bilgi amaçlıdır; okunamazsa null döner, arama kapatma yine çalışır.
+     */
+    @SuppressLint("MissingPermission", "HardwareIds")
+    @Suppress("DEPRECATION")
+    private fun safeLine1Number(): String? = try {
+        telephonyManager.line1Number
+    } catch (e: SecurityException) {
+        Log.w("CallsService", "line1Number okunamadı: ${e.message}")
+        null
+    } catch (e: Throwable) {
+        null
     }
 
     private fun hasCallPermissions(): Boolean {
